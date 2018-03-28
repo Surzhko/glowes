@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include "BMP180.h"
+#include "Bmp180.h"
 
 const byte TEMPERATURE_AND_HUMIDITY_SENSOR_ID     = 0x40;
 const byte PRESURE_SENSOR_ID                      = 0x77;
@@ -9,18 +9,20 @@ const byte TRIGGER_HUMIDITY_MEASUREMENT_HOLD      = 0xE5;
 const byte TRIGGER_TEMPERATURE_MEASUREMENT_NOHOLD = 0xF3;
 const byte TRIGGER_HUMIDITI_MEASUREMENT_NOHOLD    = 0xF5;
 
-BMP180 Bmp;
+Bmp180 bmp;
 
 void setup() {
   Serial.begin(9600);
   Wire.begin();
-  Bmp.init();
+  bmp = Bmp180(Bmp180::C_FORMAT, Bmp180::MMHG_FORMAT);
+  bmp.init();
 }
 
-void measure_temperature() {
+float measure_temperature() {
   Wire.beginTransmission(TEMPERATURE_AND_HUMIDITY_SENSOR_ID);
   Wire.write(TRIGGER_TEMPERATURE_MEASUREMENT_HOLD);
   byte status = Wire.endTransmission();
+//  Serial.println(Bmp180::CALIBRATION_REGISTERS.ac1);
 //  Serial.print("Status: ");
 //  Serial.println(status);
 
@@ -41,6 +43,7 @@ void measure_temperature() {
     float realTemperature = tempTemperature - 46.85; //From page 14
     Serial.print(realTemperature);
     Serial.print("C, ");
+    return realTemperature;
   }
 }
 
@@ -69,15 +72,18 @@ void measure_humidity() {
   }
 }
 
-void loop() {
-  Serial.print(Bmp.getPressure());
-  Serial.print("KPa, ");
-  Serial.print(7.50062 * Bmp.getPressure());
-  Serial.print("mm, ");
+//
 
+void loop() {
+  bmp.measure();
+  Serial.print(bmp.getTemperature());
+  Serial.print("C, ");
+
+  Serial.print(bmp.getPressure());
+  Serial.print("mmHg, ");
   measure_temperature();
   measure_humidity();
 
   Serial.println("==================");
-  delay(2000);
+  delay(5000);
 }
