@@ -88,7 +88,7 @@ class BMP180 {
 	float getPressure();
   float getPressure(long B5);
 	float getTemperature();
-  private:
+//  private:
 	byte readID();
 	void readCalibrationData();
 	void selectRegister(byte reg);

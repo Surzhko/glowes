@@ -75,10 +75,15 @@ void measure_humidity() {
 //
 
 void loop() {
-  Serial.print(Bmp.getTemperature() - 15.6);
+  Serial.print(Bmp.getTemperature());
   Serial.print("C, ");
   float t = measure_temperature();
-  long b5 = ((long)(t * 10)) << 4 - 8;
+  long b5 = (((long)(t * 10)) << 4) - 8;
+  Serial.print(Bmp._B5);
+  Serial.print(" <> ");
+  Serial.print(b5);
+  Serial.print(", ");
+
   Serial.print(0.750062 * Bmp.getPressure());
   Serial.print("mm, ");
   Serial.print(0.750062 * Bmp.getPressure(b5));
