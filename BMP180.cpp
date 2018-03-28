@@ -30,16 +30,25 @@ THE SOFTWARE.
 // nice
 typedef uint8_t byte;
 
+BMP180::BMP180() {
+}
+
+BMP180::BMP180(int mode) {
+}
 /**
  * Init the Chip.
  * Starts I2C communication, read chip's ID and calibration data.
- */
+ */ 
 void BMP180::init() {
 	Wire.begin();
 	setSamplingMode(BMP180_OVERSAMPLING_STANDARD);
 	_ID = readID();
 	readCalibrationData();
 }
+void BMP180::init(int mode) {
+  
+}
+
 
 /**
  * Read the ID of the chip.
@@ -78,6 +87,28 @@ void BMP180::readCalibrationData() {
 	_MB = readIntFromRegister(BMP180_CALIBRATION_DATA_MB);
 	_MC = readIntFromRegister(BMP180_CALIBRATION_DATA_MC);
 	_MD = readIntFromRegister(BMP180_CALIBRATION_DATA_MD);
+//  Serial.print(_AC1);
+//  Serial.print(", ");
+//  Serial.print(_AC2);
+//  Serial.print(", ");
+//  Serial.print(_AC3);
+//  Serial.print(", ");
+//  Serial.print(_AC4);
+//  Serial.print(", ");
+//  Serial.print(_AC5);
+//  Serial.print(", ");
+//  Serial.print(_AC6);
+//  Serial.print(", ");
+//  Serial.print(_B1);
+//  Serial.print(", ");
+//  Serial.print(_B2);
+//  Serial.print(", ");
+//  Serial.print(_MB);
+//  Serial.print(", ");
+//  Serial.print(_MC);
+//  Serial.print(", ");
+//  Serial.print(_MD);
+//  Serial.print(" ==== COEFICIENTS ====\n");
 }
 
 /**
@@ -108,7 +139,7 @@ byte BMP180::readByteFromRegister(byte reg) {
 	Wire.beginTransmission(BMP180_I2C_ADDRESS);
 	Wire.requestFrom(BMP180_I2C_ADDRESS, 1);
 	b = Wire.read();
-	if (Wire.endTransmission() != 0) return NULL;
+	Wire.endTransmission();
 	return b;
 }
 
@@ -122,7 +153,7 @@ unsigned int BMP180::readIntFromRegister(byte reg) {
 	Wire.requestFrom(BMP180_I2C_ADDRESS, 2);
 	i = Wire.read();
 	i = i << 8 | Wire.read();
-	if (Wire.endTransmission() != 0) return NULL;
+	Wire.endTransmission();
 	return i;
 }
 
@@ -138,7 +169,7 @@ unsigned long BMP180::readLongFromRegister(byte reg) {
 	l = Wire.read();
 	l = l << 8 | Wire.read();
 	l = l << 8 | Wire.read();
-	if (Wire.endTransmission() != 0) return NULL;
+	Wire.endTransmission();
 	return l;
 }
 
@@ -292,3 +323,11 @@ float BMP180::getPressure() {
 	long p = compensatePressure(up, _samplingMode);
 	return formatPressure(p);
 }
+
+float BMP180::getPressure(long B5) {
+  long up = measurePressure(_samplingMode);
+  _B5 = B5;
+  long p = compensatePressure(up, _samplingMode);
+  return formatPressure(p);
+}
+

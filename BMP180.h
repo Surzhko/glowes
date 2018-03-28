@@ -71,7 +71,10 @@ typedef uint8_t byte;
 // class definition
 class BMP180 {
   public:
+  BMP180();
+  BMP180(int mode);
 	void init();
+  void init(int mode);
 	byte getID();
 	bool hasValidID();
 	void reset();
@@ -83,6 +86,7 @@ class BMP180 {
 	float formatPressure(long P);
 	void setSamplingMode(byte samplingMode);
 	float getPressure();
+  float getPressure(long B5);
 	float getTemperature();
   private:
 	byte readID();
@@ -110,3 +114,4 @@ class BMP180 {
 };
 
 #endif
+

@@ -14,10 +14,12 @@ BMP180 Bmp;
 void setup() {
   Serial.begin(9600);
   Wire.begin();
+//  Bmp = BMP180(1);
+  Bmp.reset();
   Bmp.init();
 }
 
-void measure_temperature() {
+float measure_temperature() {
   Wire.beginTransmission(TEMPERATURE_AND_HUMIDITY_SENSOR_ID);
   Wire.write(TRIGGER_TEMPERATURE_MEASUREMENT_HOLD);
   byte status = Wire.endTransmission();
@@ -41,6 +43,7 @@ void measure_temperature() {
     float realTemperature = tempTemperature - 46.85; //From page 14
     Serial.print(realTemperature);
     Serial.print("C, ");
+    return realTemperature;
   }
 }
 
@@ -69,15 +72,19 @@ void measure_humidity() {
   }
 }
 
-void loop() {
-  Serial.print(Bmp.getPressure());
-  Serial.print("KPa, ");
-  Serial.print(7.50062 * Bmp.getPressure());
-  Serial.print("mm, ");
+//
 
-  measure_temperature();
+void loop() {
+  Serial.print(Bmp.getTemperature() - 15.6);
+  Serial.print("C, ");
+  float t = measure_temperature();
+  long b5 = ((long)(t * 10)) << 4 - 8;
+  Serial.print(0.750062 * Bmp.getPressure());
+  Serial.print("mm, ");
+  Serial.print(0.750062 * Bmp.getPressure(b5));
+  Serial.print("mm, ");
   measure_humidity();
 
   Serial.println("==================");
-  delay(2000);
+  delay(5000);
 }
