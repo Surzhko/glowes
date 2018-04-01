@@ -185,4 +185,3 @@ float Bmp180::formatPressure(long pressure, byte format) {
   if (format == MMHG_FORMAT) return pressure / 133.3224;
   if (format == MBAR_FORMAT) return pressure / 100.0;
 }
-
